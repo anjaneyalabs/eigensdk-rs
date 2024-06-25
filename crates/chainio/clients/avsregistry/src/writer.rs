@@ -1,22 +1,27 @@
-use alloy_signer::SignerSync;
+use alloy_signer::{Signer, SignerSync};
 use alloy_signer_wallet::LocalWallet;
-use ark_bn254::G1Projective;
+use ark_bn254::{G1Affine, G1Projective,Fq,G2Affine,G2Projective};
+use ark_ec::{short_weierstrass::Projective, AffineRepr, CurveGroup};
+use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use eigen_chainio_utils::{
     convert_bn254_to_ark, convert_to_bn254_g1_point, convert_to_bn254_g2_point,
 };
+use ruint::Uint;
+use ark_ff::BigInteger256;
+use ark_std::{ops::Mul};
 use eigen_client_elcontracts::reader::ELChainReader;
-use std::str::FromStr;
-
 use eigen_utils::binding::{
-    BLSApkRegistry::{G1Point, PubkeyRegistrationParams},
+    BLSApkRegistry::{G1Point, G2Point, PubkeyRegistrationParams},
     RegistryCoordinator::{
         self, G1Point as RegistryG1Point, G2Point as RegistryG2Point,
         PubkeyRegistrationParams as RegistryPubkeyRegistrationParams,
     },
 };
+use std::str::FromStr;
 
-use alloy_primitives::{Address, Bytes, FixedBytes, TxHash, U256};
-use eigen_crypto_bls::attestation::KeyPair;
+use alloy_primitives::{Address, Bytes, FixedBytes, Signature, TxHash, U256};
+use eigen_crypto_bls::attestation::{KeyPair};
+use rust_bls_bn254::{sign,verify};
 use tracing::info;
 use RegistryCoordinator::SignatureWithSaltAndExpiry;
 
@@ -137,27 +142,33 @@ impl AvsRegistryChainWriter {
         let RegistryCoordinator::pubkeyRegistrationMessageHashReturn {
             _0: g1_hashes_msg_to_sign,
         } = g1_hashes_msg_to_sign_return;
-        let signed_msg = convert_to_bn254_g1_point(
-            bls_key_pair
-                .sign_hashes_to_curve_message(G1Projective::from(
-                    convert_bn254_to_ark(G1Point {
-                        X: g1_hashes_msg_to_sign.X,
-                        Y: g1_hashes_msg_to_sign.Y,
-                    })
-                    .point,
-                ))
-                .sig(),
+
+        let mut serialized_bytes = vec![];
+
+        println!("g1 hashes msg to sign : {}", g1_hashes_msg_to_sign.X);
+        println!("g1 hashes msg to sign : {}", g1_hashes_msg_to_sign.Y);
+
+        let g1_affine = G1Affine::new(
+           Fq::from_str(&g1_hashes_msg_to_sign.X.to_string()).unwrap(),
+            Fq::from_str(&g1_hashes_msg_to_sign.Y.to_string()).unwrap()
         );
+        g1_affine.serialize_uncompressed(&mut serialized_bytes).unwrap();
+        let sign_msg = sign(bls_key_pair.priv_key, &serialized_bytes).unwrap();
+        println!(
+            "sign msg: {:?}",
+           sign_msg
+        );
+        let pubkey = G2Projective::from(G2Affine::generator()).mul(bls_key_pair.priv_key).into_affine();
 
+        let verified = verify(pubkey,&serialized_bytes,sign_msg);
+        println!("verified sig successfully:{:?}",verified);
         let g1_pubkey_bn254 = convert_to_bn254_g1_point(bls_key_pair.get_pub_key_g1());
-        let g2_projective = bls_key_pair
-            .get_pub_key_g2()
-            .expect("Failed to get g2 projective");
+        let g2_affine = G2Projective::from(G2Affine::generator()).mul(bls_key_pair.priv_key);
+        let g2_pubkey_bn254 = convert_to_bn254_g2_point(g2_affine.into());
 
-        let g2_pubkey_bn254 = convert_to_bn254_g2_point(g2_projective);
-
+        
         let pub_key_reg_params = PubkeyRegistrationParams {
-            pubkeyRegistrationSignature: signed_msg,
+            pubkeyRegistrationSignature: convert_to_bn254_g1_point(sign_msg.into()),
             pubkeyG1: g1_pubkey_bn254,
             pubkeyG2: g2_pubkey_bn254,
         };
@@ -172,12 +183,10 @@ impl AvsRegistryChainWriter {
             )
             .await?;
 
-        let operator_signature = wallet
-            .sign_message_sync(msg_to_sign.as_slice())
-            .expect("failed to sign message");
+        let operator_signature = wallet.sign_message(&Bytes::from(msg_to_sign)).await.unwrap();
 
         let operator_signature_with_salt_and_expiry = SignatureWithSaltAndExpiry {
-            signature: operator_signature.as_bytes().into(),
+            signature: Bytes::from((Signature::from(operator_signature)).as_bytes()),
             salt: operator_to_avs_registration_sig_salt,
             expiry: operator_to_avs_registration_sig_expiry,
         };
@@ -202,7 +211,7 @@ impl AvsRegistryChainWriter {
             operator_signature_with_salt_and_expiry,
         );
 
-        let tx_call = contract_call.gas(2000000);
+        let tx_call = contract_call.gas(5000000);
         let tx = tx_call.send().await?;
 
         // tracing info

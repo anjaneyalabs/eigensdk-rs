@@ -1367,9 +1367,12 @@ name = "eigen-chainio-utils"
 version = "0.0.1-alpha"
 dependencies = [
  "alloy-contract",
+ "alloy-primitives",
  "alloy-sol-types",
  "ark-bn254",
+ "ark-ec",
  "ark-ff 0.4.2",
+ "ark-std 0.4.0",
  "eigen-contract-bindings",
  "eigen-crypto-bls",
  "eigen-crypto-bn254",
@@ -1393,7 +1396,10 @@ dependencies = [
  "alloy-transport-http",
  "alloy-transport-ws",
  "ark-bn254",
+ "ark-ec",
  "ark-ff 0.4.2",
+ "ark-serialize 0.4.2",
+ "ark-std 0.4.0",
  "eigen-chainio-utils",
  "eigen-client-elcontracts",
  "eigen-crypto-bls",
@@ -1404,6 +1410,8 @@ dependencies = [
  "hex",
  "num-bigint",
  "reqwest 0.12.4",
+ "ruint",
+ "rust-bls-bn254",
  "serde_json",
  "thiserror",
  "tokio",
@@ -2053,8 +2061,10 @@ version = "0.0.1-alpha"
 dependencies = [
  "alloy-primitives",
  "alloy-provider",
+ "alloy-signer-wallet",
  "ark-bn254",
  "ark-ff 0.4.2",
+ "ark-std 0.4.0",
  "eigen-chainio-utils",
  "eigen-client-avsregistry",
  "eigen-client-elcontracts",
@@ -2063,6 +2073,7 @@ dependencies = [
  "eigen-testing-utils",
  "eigen-utils",
  "eyre",
+ "rand_core",
  "tokio",
 ]
 
@@ -3130,11 +3141,10 @@ dependencies = [
 
 [[package]]
 name = "num-bigint"
-version = "0.4.4"
+version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "608e7659b5c3d7cba262d894801b9ec9d00de989e8a82bd4bef91d08da45cdc0"
+checksum = "c165a9ab64cf766f73521c0dd2cfdff64f488b8f0b3e621face3462d3db536d7"
 dependencies = [
- "autocfg",
  "num-integer",
  "num-traits",
 ]
@@ -4008,9 +4018,9 @@ dependencies = [
 
 [[package]]
 name = "ruint"
-version = "1.12.1"
+version = "1.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8f308135fef9fc398342da5472ce7c484529df23743fb7c734e0f3d472971e62"
+checksum = "2c3cc4c2511671f327125da14133d0c5c5d137f006a1017a16f557bc85b16286"
 dependencies = [
  "alloy-rlp",
  "ark-ff 0.3.0",
@@ -4032,9 +4042,22 @@ dependencies = [
 
 [[package]]
 name = "ruint-macro"
-version = "1.2.0"
+version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f86854cf50259291520509879a5c294c3c9a4c334e9ff65071c51e42ef1e2343"
+checksum = "48fd7bd8a6377e15ad9d42a8ec25371b94ddc67abe7c8b9127bec79bebaaae18"
+
+[[package]]
+name = "rust-bls-bn254"
+version = "0.1.0"
+source = "git+ssh://git@github.com/Layr-Labs/rust-bls-bn254.git?rev=2ebe5f4#2ebe5f4d8b859c8d3dd9a18a51a272fbac791918"
+dependencies = [
+ "ark-bn254",
+ "ark-ec",
+ "ark-ff 0.4.2",
+ "ark-std 0.4.0",
+ "num-bigint",
+ "sha2",
+]
 
 [[package]]
 name = "rustc-demangle"

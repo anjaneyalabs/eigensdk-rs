@@ -74,7 +74,7 @@ fn hash_to_g1(digest: &[u8; 32]) -> G1Affine {
     }
 }
 pub struct KeyPair {
-    priv_key: PrivateKey,
+    pub priv_key: PrivateKey,
     pub_key: G1Projective,
 }
 

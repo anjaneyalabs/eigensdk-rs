@@ -17,3 +17,6 @@ eigen-crypto-bn254.workspace = true
 alloy-sol-types.workspace = true
 alloy-contract.workspace = true
 eigen-utils.workspace = true
+ark-std = { version = "0.4.0", default-features = false }
+ark-ec = { version = "0.4.2", default-features = false }
+alloy-primitives.workspace = true

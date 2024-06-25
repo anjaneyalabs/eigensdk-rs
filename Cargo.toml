@@ -120,3 +120,8 @@ alloy-rpc-client = {git = "https://github.com/alloy-rs/alloy", rev = "cc68b93"}
 avsregistry-read = {path = "examples/avsregistry-read"}
 avsregistry-write = {path = "examples/avsregistry-write"}
 anvil-utils = {path = "examples/anvil-utils"}
+
+
+# bn254-rust by Layr-labs
+rust-bls-bn254 = {git = "ssh://git@github.com/Layr-Labs/rust-bls-bn254.git", rev = "2ebe5f4", features = ["std"] }
+

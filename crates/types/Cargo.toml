@@ -10,7 +10,7 @@ license-file.workspace = true
 
 [dependencies]
 ethers.workspace = true
-num-bigint = "0.4.4"
+num-bigint = "0.4.5"
 eigen-crypto-bls.workspace = true
 eigen-contract-bindings.workspace = true
 alloy-primitives.workspace = true
