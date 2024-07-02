@@ -16,6 +16,11 @@ thiserror.workspace = true
 ark-ec = "0.4.2"
 alloy-primitives.workspace = true
 hex = "0.4.3"
+eigen-utils.workspace = true
+ethers = { version = "2.0", features = ["rustls", "ws"] }
+eyre = "0.6.8"
+num-bigint = "0.4.4"
+
 [dev-dependencies]
 rand = "0.8.4"
 tokio = { workspace = true, features = ["full"] }

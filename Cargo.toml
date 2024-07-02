@@ -8,6 +8,7 @@ members = [ "crates/chainio/clients/avsregistry/",
 "crates/crypto/bn254/",
 "crates/utils/",
 "crates/crypto/bls/",
+"crates/crypto/keystore/",
 "crates/metrics/collectors/economic/",
 "crates/metrics/collectors/rpc_calls/",
 "crates/services/avsregistry/",
@@ -69,6 +70,7 @@ eigen-contract-bindings = { path = "crates/contracts/bindings/"}
 eigen-types = {path = "crates/types/"}
 eigen-crypto-bls = {path = "crates/crypto/bls/"}
 eigen-crypto-bn254 = {path = "crates/crypto/bn254/"}
+eigen-crypto-keystore = {path = "crates/crypto/keystore/"}
 eigen-utils = {path = "crates/utils/"}
 eigen-metrics-collectors-economic = {path = "crates/metrics/collectors/economic"}
 eigen-metrics-collectors-rpc-calls = {path = "crates/metrics/collectors/rpc_calls"}
